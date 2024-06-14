@@ -195,9 +195,7 @@ $$
 - If $T = 10$, then:
 
 $$
-\sum_{i=1}^{m} \mathbb{I}[f(x_i) \neq y_i] \leq \exp(-2 \cdot 0.1
-
-^2 \cdot 10) = \exp(-0.2) \approx 0.82
+\sum_{i=1}^{m} \mathbb{I}[f(x_i) \neq y_i] \leq \exp(-2 \cdot 0.1^2 \cdot 10) = \exp(-0.2) \approx 0.82
 $$
 
 This shows that with enough rounds, the empirical error can be reduced significantly.
@@ -390,10 +388,10 @@ $$
 #### Conv(H)
 Consider a hypothesis set $H = \{h_1, h_2\}$, where $h_1$ and $h_2$ are two different functions. The convex hull $\text{conv}(H)$ includes all functions that can be written as $\mu_1 h_1 + \mu_2 h_2$ where $\mu_1 \geq 0$, $\mu_2 \geq 0$, and $\mu_1 + \mu_2 \leq 1$, This means any function that
 
- is a weighted combination of $h_1$and $h_2$ with non-negative weights summing to at most 1 is in the convex hull.
+ is a weighted combination of $h_1$ and $h_2$ with non-negative weights summing to at most 1 is in the convex hull.
 
 ### Lemma 7.4
-If the original hypothesis set $H$ has a certain capacity to fit random noise (as measured by its empirical Rademacher complexity), then forming convex combinations of functions from $H $does not increase this capacity.
+If the original hypothesis set $H$ has a certain capacity to fit random noise (as measured by its empirical Rademacher complexity), then forming convex combinations of functions from $H$ does not increase this capacity.
 
 ## Margin-Based Generalization Bounds
 
@@ -473,7 +471,7 @@ In Boosting, the row player selects training instances, and the column player se
 ### Definition 7.10
 
 ### Mixed Strategy
-A mixed strategy for the row player is a distribution $D $over the training points. A mixed strategy for the column player is a distribution over the base classifiers, derived from a non-negative vector $\alpha$,
+A mixed strategy for the row player is a distribution $D$ over the training points. A mixed strategy for the column player is a distribution over the base classifiers, derived from a non-negative vector $\alpha$,
 
 ### Theorem 7.11 von Neumann's Minimax Theorem
 This equality shows that there exists a mixed strategy for each player such that the expected loss for one is the same as the expected payoff for the other.
