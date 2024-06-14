@@ -49,8 +49,6 @@ For each round $t$:
 #### Final Hypothesis
 Combine the weak classifiers using weights proportional to their accuracy.
 
-### Illustration
-![[Pasted image 20240614093535.png]]
 ### Key Components
 - **Base Classifier Set $H$**: This is the set from which base classifiers are selected. Base classifiers map from the input space $X$ to the output space $\{-1, +1\}$,
 - **Labeled Sample $S$**: A sample $S$ consists of pairs $(x_i, y_i)$, where $x_i \in X$ and $y_i \in \{-1, +1\}$,
@@ -326,7 +324,7 @@ For a class of linear classifiers in 2D (lines in a plane), the VC dimension is 
 Definition: A measure of the distance between data points and the decision boundary of a classifier.
 
 ### Confidence Margin
-For a real-valued function $f $at a point $x $with label $y$, the confidence margin is defined as $y f(x)$,
+For a real-valued function $f$ at a point $x$ with label $y$, the confidence margin is defined as $y f(x)$,
 
 ### Geometric Margin for SVMs
 In SVMs, the geometric margin is a lower bound on the confidence margin of a linear hypothesis with a normalized weight vector $w$, where $\|w\|_2 = 1$,
@@ -458,7 +456,7 @@ Despite theoretical guarantees, margin theory alone is insufficient to explain p
 Using von Neumann's minimax theorem to draw connections between the maximum margin, the optimal edge, and the weak learning condition.
 
 ### Edge of a Base Classifier
-This measures the performance of the base classifier $h_t $relative to random guessing under the distribution $D$,
+This measures the performance of the base classifier $h_t$ relative to random guessing under the distribution $D$,
 
 ### Weak Learning Condition
 AdaBoost's weak learning condition requires that there exists a $γ > 0$ such that for any distribution $D$ over the training sample and any base classifier $h_t$, the edge $γ_t(D)$ is at least $γ$:
@@ -490,7 +488,7 @@ Relates the maximum margin and the best possible edge.
 ### 5.6 Implications
 
 #### Weak Learning Condition and Margin
-The weak learning condition ($γ^* > 0 $) implies $ρ^* > 0$, indicating the existence of a classifier with a positive margin.
+The weak learning condition ($γ^* > 0$) implies $ρ^* > 0$, indicating the existence of a classifier with a positive margin.
 
 #### Algorithmic Goals
 AdaBoost aims to achieve a non-zero margin, although it may not always achieve the optimal margin.
@@ -553,10 +551,10 @@ This bound is useful for deriving an optimal strategy for selecting the weights 
 
 ## Optimization
 
-### Selecting Weights $\alpha $
+### Selecting Weights $\alpha$
 The minimization with respect to $ρ$ does not lead to a convex optimization problem due to the interdependence of the second and third terms. Instead, $ρ$ is treated as a free parameter, typically determined via cross-validation.
 
-### Optimization for $\alpha $
+### Optimization for $\alpha$
 The primary focus is on minimizing the empirical risk. The bound suggests selecting $\alpha $as the solution to the following problem:
 
 $$
