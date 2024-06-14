@@ -564,7 +564,7 @@ $$
 $$
 
 ### Lagrange Formulation
-We want to find the weights $\alpha $that minimize the empirical risk of the classifier while also satisfying the constraint on the L1-norm of $\alpha$, So,
+We want to find the weights $\alpha$ that minimize the empirical risk of the classifier while also satisfying the constraint on the L1-norm of $\alpha$, So,
 
 $$
 \min_{\alpha} \sum_{i=1}^{m} \exp(-y_i f(x_i)) \quad \text{s.t.} \quad \| \alpha \|_1 \leq C
