@@ -1,5 +1,12 @@
+---
+title: "Chapter 10: Ranking"
+layout: default
+---
+
+# Chapter 10: Ranking
 
 # Table of Contents
+- [Chapter 10: Ranking](#chapter-10-ranking)
 - [Table of Contents](#table-of-contents)
 - [1. Introduction](#1-introduction)
   - [1.1 Motivation for Ranking](#11-motivation-for-ranking)
