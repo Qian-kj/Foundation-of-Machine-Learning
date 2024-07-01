@@ -1,4 +1,144 @@
 
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+  });
+</script>
+<script type="text/javascript" async
+ src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+# Table of Contents
+- [Table of Contents](#table-of-contents)
+- [1. Introduction](#1-introduction)
+  - [1.1 Motivation for Ranking](#11-motivation-for-ranking)
+    - [(1) Resource Limitation in Classification:](#1-resource-limitation-in-classification)
+    - [(2) Examples:](#2-examples)
+  - [1.2 Two General Settings for Ranking](#12-two-general-settings-for-ranking)
+  - [1.3 Algorithms Discussed:](#13-algorithms-discussed)
+    - [(1) SVM-Based Ranking Algorithm:](#1-svm-based-ranking-algorithm)
+    - [(2) RankBoost:](#2-rankboost)
+    - [(3) Bipartite Ranking:](#3-bipartite-ranking)
+  - [1.4 Evaluation Metrics](#14-evaluation-metrics)
+- [2. The Problem of Ranking](#2-the-problem-of-ranking)
+  - [2.1 Ranking Problem](#21-ranking-problem)
+  - [2.2 Scoring Function](#22-scoring-function)
+  - [2.3 Preference Function $f$](#23-preference-function-f)
+    - [(1) Definition](#1-definition)
+    - [(2) Non-Transitivity](#2-non-transitivity)
+  - [2.4 Labeled Sample](#24-labeled-sample)
+  - [2.5 Target](#25-target)
+    - [(1) Goal](#1-goal)
+    - [(2) Generalization Error $R(h)$](#2-generalization-error-rh)
+    - [(3) Empirical Error $\\hat{R}\_S(h)$](#3-empirical-error-hatr_sh)
+    - [**(4) Key points:**](#4-key-points)
+- [3. Generalization Bound](#3-generalization-bound)
+  - [3.1 Margin-Based Generalization Bounds](#31-margin-based-generalization-bounds)
+    - [(1) Simplification:](#1-simplification)
+    - [(2) Empirical Margin Loss](#2-empirical-margin-loss)
+    - [(3) Margin Loss and Pairwise Misranking](#3-margin-loss-and-pairwise-misranking)
+  - [3.2 Theorem 10.1](#32-theorem-101)
+    - [(1) Distribution $D$](#1-distribution-d)
+    - [(2) Margin Bound for Ranking](#2-margin-bound-for-ranking)
+    - [(3) Proof:](#3-proof)
+    - [(4) Extension:](#4-extension)
+  - [3.3 Corollary 10.2](#33-corollary-102)
+    - [(1) Margin Bounds with Kernel-Based Hypotheses](#1-margin-bounds-with-kernel-based-hypotheses)
+    - [(2) Implication:](#2-implication)
+- [4. Ranking with SVMs](#4-ranking-with-svms)
+  - [4.1 Theoretical Guarantee](#41-theoretical-guarantee)
+  - [4.2 Objective Function and Constraints](#42-objective-function-and-constraints)
+    - [(1) Aim:](#1-aim)
+    - [(2) Objective Function:](#2-objective-function)
+    - [(3) Subject to the Constraints:](#3-subject-to-the-constraints)
+    - [(4) Interpretation:](#4-interpretation)
+    - [(5) Kernel Trick:](#5-kernel-trick)
+    - [(6) Application:](#6-application)
+- [5. RankBoost](#5-rankboost)
+  - [5.1 Introduction:](#51-introduction)
+  - [5.2 Components:](#52-components)
+    - [(1) Base Rankers:](#1-base-rankers)
+    - [(2) Weak Learning Algorithm:](#2-weak-learning-algorithm)
+  - [5.3 Weighted error rate $\\epsilon\_{t}^{s}$](#53-weighted-error-rate-epsilon_ts)
+    - [(1) Meaning:](#1-meaning)
+    - [(2) Definition:](#2-definition)
+  - [5.3 Algorithm:](#53-algorithm)
+    - [(1) Pseudocode](#1-pseudocode)
+  - [5.4 Key Components:](#54-key-components)
+    - [(1) Base Ranker Selection:](#1-base-ranker-selection)
+    - [(2) Coefficient $\\alpha\_t$:](#2-coefficient-alpha_t)
+    - [(3) Distribution Update:](#3-distribution-update)
+  - [5.5 Explanation:](#55-explanation)
+    - [(1) Updates:](#1-updates)
+    - [(2) Final Hypothesis:](#2-final-hypothesis)
+    - [(3) Distribution Update Identity:](#3-distribution-update-identity)
+  - [5.6 Bound on the Empirical Error:](#56-bound-on-the-empirical-error)
+    - [(1) Theorem 10.3: Empirical Error Bound for RankBoost](#1-theorem-103-empirical-error-bound-for-rankboost)
+    - [(2) Proof:](#2-proof)
+    - [(3) Implications:](#3-implications)
+  - [5.7 Relationship with Coordinate Descent:](#57-relationship-with-coordinate-descent)
+    - [(1) Objective Function $F$:](#1-objective-function-f)
+    - [(2) Parameter Update by Coordinate Descent:](#2-parameter-update-by-coordinate-descent)
+    - [(3) Distribution Update:](#3-distribution-update-1)
+    - [(4) Directional Derivative and Coordinate Descent:](#4-directional-derivative-and-coordinate-descent)
+    - [(5) Step Size $\\eta$:](#5-step-size-eta)
+    - [(6) Alternative Loss Functions:](#6-alternative-loss-functions)
+  - [5.8 Margin Bound for Ensemble Methods in Ranking](#58-margin-bound-for-ensemble-methods-in-ranking)
+    - [(1) Assumptions:](#1-assumptions)
+    - [(2) Corollary 10.4](#2-corollary-104)
+    - [(3) Applications:](#3-applications)
+    - [(4) Summary:](#4-summary)
+- [6. Bipartite ranking](#6-bipartite-ranking)
+  - [6.1 Introduction](#61-introduction)
+    - [(1) Definition](#1-definition-1)
+    - [(2) Traditional vs. Bipartite approach](#2-traditional-vs-bipartite-approach)
+    - [(3) Learning problem](#3-learning-problem)
+    - [(4) Challenges](#4-challenges)
+  - [6.2 Boosting in bipartite ranking](#62-boosting-in-bipartite-ranking)
+    - [(1) Key property of RankBoost](#1-key-property-of-rankboost)
+    - [(2) Efficiency in bipartite ranking](#2-efficiency-in-bipartite-ranking)
+    - [(3) Pseudocode](#3-pseudocode)
+    - [(4) Relationship with AdaBoost](#4-relationship-with-adaboost)
+  - [6.3 Area under the ROC curve](#63-area-under-the-roc-curve)
+    - [(1) Definition](#1-definition-2)
+    - [(2) Properties of AUC](#2-properties-of-auc)
+- [7. Preference-based setting](#7-preference-based-setting)
+  - [7.1 Introduction](#71-introduction)
+    - [(1) Comparison with score-based setting](#1-comparison-with-score-based-setting)
+    - [(2) Objective](#2-objective)
+    - [(3) Advantage](#3-advantage)
+    - [(4) Stages](#4-stages)
+  - [7.2 Second-stage ranking problem](#72-second-stage-ranking-problem)
+    - [(1) Assumption](#1-assumption)
+    - [(2) Stochastic characteristics](#2-stochastic-characteristics)
+    - [(3) Loss function](#3-loss-function)
+    - [(4) Expected loss and regret](#4-expected-loss-and-regret)
+    - [(5) Pairwise independence](#5-pairwise-independence)
+  - [7.3 Deterministic algorithm](#73-deterministic-algorithm)
+    - [(1) Sort-by-degree algorithm](#1-sort-by-degree-algorithm)
+    - [(2) Expected loss and regret](#2-expected-loss-and-regret)
+    - [(3) Implications](#3-implications-1)
+    - [(4) Theorem 10.5](#4-theorem-105)
+    - [(5) Limitations](#5-limitations)
+  - [7.4 Randomized algorithm](#74-randomized-algorithm)
+    - [（1） Introduction](#1-introduction-1)
+    - [(2) Algorithm](#2-algorithm)
+    - [(3) Guarantees](#3-guarantees)
+    - [(4) Time complexity](#4-time-complexity)
+  - [7.5 Extension to other loss functions](#75-extension-to-other-loss-functions)
+    - [(1) Weighted loss functions](#1-weighted-loss-functions)
+    - [(2) Weight function $\\omega$](#2-weight-function-omega)
+    - [(3) Correct order importance](#3-correct-order-importance)
+- [8. Other ranking criteria](#8-other-ranking-criteria)
+  - [8.1 Precision, precision@n, average precision, recall](#81-precision-precisionn-average-precision-recall)
+    - [(1) Precision](#1-precision)
+    - [(2) Precision @n](#2-precision-n)
+    - [(3) Average precision](#3-average-precision)
+    - [(4) Recall](#4-recall)
+  - [8.2 DCG and NDCG](#82-dcg-and-ndcg)
+    - [(1) DCG](#1-dcg)
+    - [(2) NDCG](#2-ndcg)
+
 
 # 1. Introduction
 
@@ -236,7 +376,7 @@ where $D_t(i)$ is the distribution weight of the $i$-th pair at iteration $t$.
 
 ### (1) Pseudocode
 
-```
+````
 RankBoost($S = \{(x_1, x_1', y_1), \ldots, (x_m, x_m', y_m)\}$)
 
 for i <- 1 to m do
@@ -253,7 +393,7 @@ for t <- 1 to T do
 f <- Σ_{t=1}^T α_t h_t
 
 return f
-```
+````
 
 ## 5.4 Key Components:
 
@@ -517,7 +657,7 @@ $$
 The time and space complexity depends only on the total number of points $m+n$, not on the number of pairs $m \times n$.
 
 ### (3) Pseudocode
-````
+```
 BipartiteRankBoost($S = \{x_1', \ldots, x_m', x_1, \ldots, x_n\}$)
 
 for j <- 1 to m do
@@ -542,7 +682,7 @@ for t <- 1 to T do
 $f \leftarrow \sum_{t=1}^{T} \alpha_t h_t$
 
 return f
-````
+```
 
 ### (4) Relationship with AdaBoost
 
