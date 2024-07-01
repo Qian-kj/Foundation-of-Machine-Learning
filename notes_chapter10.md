@@ -138,6 +138,8 @@ layout: default
     - [(2) NDCG](#2-ndcg)
 
 
+  
+
 # 1. Introduction
 
 ## 1.1 Motivation for Ranking
@@ -185,7 +187,7 @@ Real-valued function assigning scores to input points
 ## 2.3 Preference Function $f$
 
 ### (1) Definition
-Let $X$ be the input space and $D$ be an unknown distribution over $X \times X$ indicating pairs of points the preference function $f: X \times X \to \{-1, 0, +1\}$.
+Let \(X\) be the input space and $D$ be an unknown distribution over $X \times X$ indicating pairs of points the preference function $f: X \times X \to \{-1, 0, +1\}$.
 
 ### (2) Non-Transitivity
 
@@ -323,8 +325,8 @@ $$
 
 ### (3) Subject to the Constraints:
 
-subject to: $y_i \left[ \mathbf{w} \cdot \left( \Phi(x_i') - \Phi(x_i) \right) \right] \geq 1 - \xi_i$
-
+subject to:
+$y_i \left[ \mathbf{w} \cdot \left( \Phi(x_i') - \Phi(x_i) \right) \right] \geq 1 - \xi_i$
 $\xi_i \geq 0, \quad \forall i \in [m]$.
 
 ### (4) Interpretation:
@@ -779,7 +781,7 @@ Pairwise consistent: $h(u,v) + h(v,u) = 1$ for all $u,v \in X$
 
 ### (3) Loss function
 
-- Loss function $$L$$
+- Loss function $L$
 
 $$
 L(\sigma, \sigma^*) = \frac{2}{n(n - 1)} \sum_{u \neq v} \mathbf{1}_{\sigma(u) < \sigma(v)} \mathbf{1}_{\sigma^*(v) < \sigma^*(u)},
@@ -863,7 +865,7 @@ Randomization is suggested as deterministic algorithms have an inherent lower bo
 
 - General idea： Extends the QuickSort algorithm for the second stage of ranking
 
-- Advantage： The expected time complexity is $O(n \log n)$ when applied to an array of size $$n$$, and it removes the factor of two in the deterministic case bounds.
+- Advantage： The expected time complexity is $O(n \log n)$ when applied to an array of size $n$, and it removes the factor of two in the deterministic case bounds.
 
 ### (2) Algorithm
 
@@ -939,7 +941,7 @@ The triangle inequality property stems from the idea that if correctly ordering 
 Measures the accuracy of positive predictions
 
 ### (2) Precision @n
-Focuses on the top $$n$$ predictions
+Focuses on the top $n$ predictions
 
 ### (3) Average precision
 Averages precision at various cutoff points
