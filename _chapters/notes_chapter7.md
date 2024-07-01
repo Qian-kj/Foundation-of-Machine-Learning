@@ -1,3 +1,8 @@
+---
+title: "Chapter 10: Ranking"
+layout: default
+---
+
 # Chapter 7: AdaBoost and Ensemble Methods
 
 ## 1. Aim
