@@ -187,7 +187,7 @@ Real-valued function assigning scores to input points
 ## 2.3 Preference Function $f$
 
 ### (1) Definition
-Let \(X\) be the input space and $D$ be an unknown distribution over $X \times X$ indicating pairs of points the preference function $f: X \times X \to \{-1, 0, +1\}$.
+Let $X$ be the input space and $D$ be an unknown distribution over $X \times X$ indicating pairs of points the preference function $f: X \times X \to \{-1, 0, +1\}$.
 
 ### (2) Non-Transitivity
 
