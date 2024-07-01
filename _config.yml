@@ -1,8 +1,7 @@
+theme: minima
+
 markdown: kramdown
 highlighter: rouge
-kramdown:
-  input: GFM
-  math_engine: mathjax
-  mathjax:
-    # Serve MathJax from the MathJax CDN (cdnjs.cloudflare.com)
-    cdn: //cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js
+
+plugins:
+  - jekyll-seo-tag
