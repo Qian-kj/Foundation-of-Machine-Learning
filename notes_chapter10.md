@@ -1,7 +1,4 @@
----
-title: "Chapter 10: Ranking"
-layout: default
----
+
 
 # Chapter 10: Ranking
 
