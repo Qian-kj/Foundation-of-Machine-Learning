@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Chapter 10: Ranking | Foundations of Machine Learning</title>
+<meta name="generator" content="Jekyll v3.9.5" />
+<meta property="og:title" content="Chapter 10: Ranking" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Notes for Foundations of Machine Learning" />
+<meta property="og:description" content="Notes for Foundations of Machine Learning" />
+<link rel="canonical" href="http://localhost:4000/notes_chapter10.html" />
+<meta property="og:url" content="http://localhost:4000/notes_chapter10.html" />
+<meta property="og:site_name" content="Foundations of Machine Learning" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Chapter 10: Ranking" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"Notes for Foundations of Machine Learning","headline":"Chapter 10: Ranking","url":"http://localhost:4000/notes_chapter10.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Foundations of Machine Learning" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Foundations of Machine Learning</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/notes_chapter10.html">Chapter 10: Ranking</a><a class="page-link" href="/notes_chapter7.html">Chapter 7: AdaBoost and Ensemble Methods</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <h1 id="chapter-10-ranking">Chapter 10: Ranking</h1>
+
+<h1 id="table-of-contents">Table of Contents</h1>
+<ul>
+  <li><a href="#chapter-10-ranking">Chapter 10: Ranking</a></li>
+  <li><a href="#table-of-contents">Table of Contents</a></li>
+  <li><a href="#1-introduction">1. Introduction</a>
+    <ul>
+      <li><a href="#11-motivation-for-ranking">1.1 Motivation for Ranking</a>
+        <ul>
+          <li><a href="#1-resource-limitation-in-classification">(1) Resource Limitation in Classification:</a></li>
+          <li><a href="#2-examples">(2) Examples:</a></li>
+        </ul>
+      </li>
+      <li><a href="#12-two-general-settings-for-ranking">1.2 Two General Settings for Ranking</a></li>
+      <li><a href="#13-algorithms-discussed">1.3 Algorithms Discussed:</a>
+        <ul>
+          <li><a href="#1-svm-based-ranking-algorithm">(1) SVM-Based Ranking Algorithm:</a></li>
+          <li><a href="#2-rankboost">(2) RankBoost:</a></li>
+          <li><a href="#3-bipartite-ranking">(3) Bipartite Ranking:</a></li>
+        </ul>
+      </li>
+      <li><a href="#14-evaluation-metrics">1.4 Evaluation Metrics</a></li>
+    </ul>
+  </li>
+  <li><a href="#2-the-problem-of-ranking">2. The Problem of Ranking</a>
+    <ul>
+      <li><a href="#21-ranking-problem">2.1 Ranking Problem</a></li>
+      <li><a href="#22-scoring-function">2.2 Scoring Function</a></li>
+      <li><a href="#23-preference-function-f">2.3 Preference Function $f$</a>
+        <ul>
+          <li><a href="#1-definition">(1) Definition</a></li>
+          <li><a href="#2-non-transitivity">(2) Non-Transitivity</a></li>
+        </ul>
+      </li>
+      <li><a href="#24-labeled-sample">2.4 Labeled Sample</a></li>
+      <li><a href="#25-target">2.5 Target</a>
+        <ul>
+          <li><a href="#1-goal">(1) Goal</a></li>
+          <li><a href="#2-generalization-error-rh">(2) Generalization Error $R(h)$</a></li>
+          <li><a href="#3-empirical-error-hatr_sh">(3) Empirical Error $\hat{R}_S(h)$</a></li>
+          <li><a href="#4-key-points"><strong>(4) Key points:</strong></a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#3-generalization-bound">3. Generalization Bound</a>
+    <ul>
+      <li><a href="#31-margin-based-generalization-bounds">3.1 Margin-Based Generalization Bounds</a>
+        <ul>
+          <li><a href="#1-simplification">(1) Simplification:</a></li>
+          <li><a href="#2-empirical-margin-loss">(2) Empirical Margin Loss</a></li>
+          <li><a href="#3-margin-loss-and-pairwise-misranking">(3) Margin Loss and Pairwise Misranking</a></li>
+        </ul>
+      </li>
+      <li><a href="#32-theorem-101">3.2 Theorem 10.1</a>
+        <ul>
+          <li><a href="#1-distribution-d">(1) Distribution $D$</a></li>
+          <li><a href="#2-margin-bound-for-ranking">(2) Margin Bound for Ranking</a></li>
+          <li><a href="#3-proof">(3) Proof:</a></li>
+          <li><a href="#4-extension">(4) Extension:</a></li>
+        </ul>
+      </li>
+      <li><a href="#33-corollary-102">3.3 Corollary 10.2</a>
+        <ul>
+          <li><a href="#1-margin-bounds-with-kernel-based-hypotheses">(1) Margin Bounds with Kernel-Based Hypotheses</a></li>
+          <li><a href="#2-implication">(2) Implication:</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#4-ranking-with-svms">4. Ranking with SVMs</a>
+    <ul>
+      <li><a href="#41-theoretical-guarantee">4.1 Theoretical Guarantee</a></li>
+      <li><a href="#42-objective-function-and-constraints">4.2 Objective Function and Constraints</a>
+        <ul>
+          <li><a href="#1-aim">(1) Aim:</a></li>
+          <li><a href="#2-objective-function">(2) Objective Function:</a></li>
+          <li><a href="#3-subject-to-the-constraints">(3) Subject to the Constraints:</a></li>
+          <li><a href="#4-interpretation">(4) Interpretation:</a></li>
+          <li><a href="#5-kernel-trick">(5) Kernel Trick:</a></li>
+          <li><a href="#6-application">(6) Application:</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#5-rankboost">5. RankBoost</a>
+    <ul>
+      <li><a href="#51-introduction">5.1 Introduction:</a></li>
+      <li><a href="#52-components">5.2 Components:</a>
+        <ul>
+          <li><a href="#1-base-rankers">(1) Base Rankers:</a></li>
+          <li><a href="#2-weak-learning-algorithm">(2) Weak Learning Algorithm:</a></li>
+        </ul>
+      </li>
+      <li><a href="#53-weighted-error-rate-epsilon_ts">5.3 Weighted error rate $\epsilon_{t}^{s}$</a>
+        <ul>
+          <li><a href="#1-meaning">(1) Meaning:</a></li>
+          <li><a href="#2-definition">(2) Definition:</a></li>
+        </ul>
+      </li>
+      <li><a href="#53-algorithm">5.3 Algorithm:</a>
+        <ul>
+          <li><a href="#1-pseudocode">(1) Pseudocode</a></li>
+        </ul>
+      </li>
+      <li><a href="#54-key-components">5.4 Key Components:</a>
+        <ul>
+          <li><a href="#1-base-ranker-selection">(1) Base Ranker Selection:</a></li>
+          <li><a href="#2-coefficient-alpha_t">(2) Coefficient $\alpha_t$:</a></li>
+          <li><a href="#3-distribution-update">(3) Distribution Update:</a></li>
+        </ul>
+      </li>
+      <li><a href="#55-explanation">5.5 Explanation:</a>
+        <ul>
+          <li><a href="#1-updates">(1) Updates:</a></li>
+          <li><a href="#2-final-hypothesis">(2) Final Hypothesis:</a></li>
+          <li><a href="#3-distribution-update-identity">(3) Distribution Update Identity:</a></li>
+        </ul>
+      </li>
+      <li><a href="#56-bound-on-the-empirical-error">5.6 Bound on the Empirical Error:</a>
+        <ul>
+          <li><a href="#1-theorem-103-empirical-error-bound-for-rankboost">(1) Theorem 10.3: Empirical Error Bound for RankBoost</a></li>
+          <li><a href="#2-proof">(2) Proof:</a></li>
+          <li><a href="#3-implications">(3) Implications:</a></li>
+        </ul>
+      </li>
+      <li><a href="#57-relationship-with-coordinate-descent">5.7 Relationship with Coordinate Descent:</a>
+        <ul>
+          <li><a href="#1-objective-function-f">(1) Objective Function $F$:</a></li>
+          <li><a href="#2-parameter-update-by-coordinate-descent">(2) Parameter Update by Coordinate Descent:</a></li>
+          <li><a href="#3-distribution-update-1">(3) Distribution Update:</a></li>
+          <li><a href="#4-directional-derivative-and-coordinate-descent">(4) Directional Derivative and Coordinate Descent:</a></li>
+          <li><a href="#5-step-size-eta">(5) Step Size $\eta$:</a></li>
+          <li><a href="#6-alternative-loss-functions">(6) Alternative Loss Functions:</a></li>
+        </ul>
+      </li>
+      <li><a href="#58-margin-bound-for-ensemble-methods-in-ranking">5.8 Margin Bound for Ensemble Methods in Ranking</a>
+        <ul>
+          <li><a href="#1-assumptions">(1) Assumptions:</a></li>
+          <li><a href="#2-corollary-104">(2) Corollary 10.4</a></li>
+          <li><a href="#3-applications">(3) Applications:</a></li>
+          <li><a href="#4-summary">(4) Summary:</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#6-bipartite-ranking">6. Bipartite ranking</a>
+    <ul>
+      <li><a href="#61-introduction">6.1 Introduction</a>
+        <ul>
+          <li><a href="#1-definition-1">(1) Definition</a></li>
+          <li><a href="#2-traditional-vs-bipartite-approach">(2) Traditional vs. Bipartite approach</a></li>
+          <li><a href="#3-learning-problem">(3) Learning problem</a></li>
+          <li><a href="#4-challenges">(4) Challenges</a></li>
+        </ul>
+      </li>
+      <li><a href="#62-boosting-in-bipartite-ranking">6.2 Boosting in bipartite ranking</a>
+        <ul>
+          <li><a href="#1-key-property-of-rankboost">(1) Key property of RankBoost</a></li>
+          <li><a href="#2-efficiency-in-bipartite-ranking">(2) Efficiency in bipartite ranking</a></li>
+          <li><a href="#3-pseudocode">(3) Pseudocode</a></li>
+          <li><a href="#4-relationship-with-adaboost">(4) Relationship with AdaBoost</a></li>
+        </ul>
+      </li>
+      <li><a href="#63-area-under-the-roc-curve">6.3 Area under the ROC curve</a>
+        <ul>
+          <li><a href="#1-definition-2">(1) Definition</a></li>
+          <li><a href="#2-properties-of-auc">(2) Properties of AUC</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#7-preference-based-setting">7. Preference-based setting</a>
+    <ul>
+      <li><a href="#71-introduction">7.1 Introduction</a>
+        <ul>
+          <li><a href="#1-comparison-with-score-based-setting">(1) Comparison with score-based setting</a></li>
+          <li><a href="#2-objective">(2) Objective</a></li>
+          <li><a href="#3-advantage">(3) Advantage</a></li>
+          <li><a href="#4-stages">(4) Stages</a></li>
+        </ul>
+      </li>
+      <li><a href="#72-second-stage-ranking-problem">7.2 Second-stage ranking problem</a>
+        <ul>
+          <li><a href="#1-assumption">(1) Assumption</a></li>
+          <li><a href="#2-stochastic-characteristics">(2) Stochastic characteristics</a></li>
+          <li><a href="#3-loss-function">(3) Loss function</a></li>
+          <li><a href="#4-expected-loss-and-regret">(4) Expected loss and regret</a></li>
+          <li><a href="#5-pairwise-independence">(5) Pairwise independence</a></li>
+        </ul>
+      </li>
+      <li><a href="#73-deterministic-algorithm">7.3 Deterministic algorithm</a>
+        <ul>
+          <li><a href="#1-sort-by-degree-algorithm">(1) Sort-by-degree algorithm</a></li>
+          <li><a href="#2-expected-loss-and-regret">(2) Expected loss and regret</a></li>
+          <li><a href="#3-implications-1">(3) Implications</a></li>
+          <li><a href="#4-theorem-105">(4) Theorem 10.5</a></li>
+          <li><a href="#5-limitations">(5) Limitations</a></li>
+        </ul>
+      </li>
+      <li><a href="#74-randomized-algorithm">7.4 Randomized algorithm</a>
+        <ul>
+          <li><a href="#1-introduction-1">（1） Introduction</a></li>
+          <li><a href="#2-algorithm">(2) Algorithm</a></li>
+          <li><a href="#3-guarantees">(3) Guarantees</a></li>
+          <li><a href="#4-time-complexity">(4) Time complexity</a></li>
+        </ul>
+      </li>
+      <li><a href="#75-extension-to-other-loss-functions">7.5 Extension to other loss functions</a>
+        <ul>
+          <li><a href="#1-weighted-loss-functions">(1) Weighted loss functions</a></li>
+          <li><a href="#2-weight-function-omega">(2) Weight function $\omega$</a></li>
+          <li><a href="#3-correct-order-importance">(3) Correct order importance</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#8-other-ranking-criteria">8. Other ranking criteria</a>
+    <ul>
+      <li><a href="#81-precision-precisionn-average-precision-recall">8.1 Precision, precision@n, average precision, recall</a>
+        <ul>
+          <li><a href="#1-precision">(1) Precision</a></li>
+          <li><a href="#2-precision-n">(2) Precision @n</a></li>
+          <li><a href="#3-average-precision">(3) Average precision</a></li>
+          <li><a href="#4-recall">(4) Recall</a></li>
+        </ul>
+      </li>
+      <li><a href="#82-dcg-and-ndcg">8.2 DCG and NDCG</a>
+        <ul>
+          <li><a href="#1-dcg">(1) DCG</a></li>
+          <li><a href="#2-ndcg">(2) NDCG</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h1 id="1-introduction">1. Introduction</h1>
+
+<h2 id="11-motivation-for-ranking">1.1 Motivation for Ranking</h2>
+
+<h3 id="1-resource-limitation-in-classification">(1) Resource Limitation in Classification:</h3>
+
+<p>For large datasets, it’s often impractical to process all items labeled as relevant by a classifier.</p>
+
+<h3 id="2-examples">(2) Examples:</h3>
+<ul>
+  <li>Search engines</li>
+  <li>Fraud detection systems</li>
+</ul>
+
+<h2 id="12-two-general-settings-for-ranking">1.2 Two General Settings for Ranking</h2>
+
+<p>(1) Score-Based Setting: Margin-based generalization bounds using Rademacher complexity</p>
+
+<p>(2) Preference-Based Setting: Regret-based guarantees for both deterministic and randomized algorithms.</p>
+
+<h2 id="13-algorithms-discussed">1.3 Algorithms Discussed:</h2>
+
+<h3 id="1-svm-based-ranking-algorithm">(1) SVM-Based Ranking Algorithm:</h3>
+
+<p>Derived from margin-based bounds</p>
+
+<h3 id="2-rankboost">(2) RankBoost:</h3>
+
+<p>A boosting algorithm specifically for ranking</p>
+
+<h3 id="3-bipartite-ranking">(3) Bipartite Ranking:</h3>
+
+<p>Classifying points into one of two classes and ranking</p>
+
+<h2 id="14-evaluation-metrics">1.4 Evaluation Metrics</h2>
+<p>ROC Curves and AUC</p>
+
+<h1 id="2-the-problem-of-ranking">2. The Problem of Ranking</h1>
+
+<h2 id="21-ranking-problem">2.1 Ranking Problem</h2>
+<p>Using labeled information to create an accurate ranking prediction for all points in a dataset.
+In the score-based setting, labeled information is provided only for pairs of points and the quality of the predictor is measured by its average pairwise misranking.</p>
+
+<h2 id="22-scoring-function">2.2 Scoring Function</h2>
+<p>Real-valued function assigning scores to input points</p>
+
+<h2 id="23-preference-function-f">2.3 Preference Function $f$</h2>
+
+<h3 id="1-definition">(1) Definition</h3>
+<p>Let $X$ be the input space and $D$ be an unknown distribution over $X \times X$ indicating pairs of points the preference function $f: X \times X \to {-1, 0, +1}$.</p>
+
+<h3 id="2-non-transitivity">(2) Non-Transitivity</h3>
+
+<ul>
+  <li>
+    <p>Example:
+$f(x, x’) = 1$ and $f(x’, x’’) = 1$ but $f(x, x’’) = -1$ can all hold simultaneously.</p>
+  </li>
+  <li>
+    <p>Practice: This situation can arise in practice due to varying criteria for ranking different pairs of items.</p>
+  </li>
+</ul>
+
+<h2 id="24-labeled-sample">2.4 Labeled Sample</h2>
+<p>The learner receives a labeled sample $S = { ((x_1, x_1’), y_1), \ldots, ((x_m, x_m’), y_m) } \subset X \times X \times {-1, 0, +1}$ with $(x_i, x_i’)$ drawn i.i.d. according to $D$ and $y_i = f(x_i, x_i’)$.</p>
+
+<h2 id="25-target">2.5 Target</h2>
+
+<h3 id="1-goal">(1) Goal</h3>
+<p>To select a hypothesis $h \in H$ with small expected pairwise misranking (empirical error) or generalization error $R(h)$.</p>
+
+<h3 id="2-generalization-error-rh">(2) Generalization Error $R(h)$</h3>
+
+\[R(h) = \mathbb{P}_{(x, x') \sim \mathcal{D}} \left[ \left( f(x, x') \neq 0 \right) \land \left( f(x, x')(h(x') - h(x)) \leq 0 \right) \right]\]
+
+<p>Measures the probability that $h$ misranks a pair $(x, x’)$.</p>
+
+<h3 id="3-empirical-error-hatr_sh">(3) Empirical Error $\hat{R}_S(h)$</h3>
+
+\[\hat{R}_S(h) = \frac{1}{m} \sum_{i=1}^{m} \mathbf{1} \left[ (y_i \neq 0) \land \left( y_i (h(x_i') - h(x_i)) \leq 0 \right) \right]\]
+
+<p>Measures the misranking error of $h$ over the sample $S$.</p>
+
+<h3 id="4-key-points"><strong>(4) Key points:</strong></h3>
+<ul>
+  <li>The target preference function $f$ is generally non-transitive whereas the scoring function $h$ induces a transitive ordering.</li>
+  <li>This inherent difference means no hypothesis $h$ can perfectly predict the target pairwise ranking if $f$ is not transitive.</li>
+  <li>The empirical error is an estimate of the generalization error based on the sample data.</li>
+</ul>
+
+<h1 id="3-generalization-bound">3. Generalization Bound</h1>
+
+<h2 id="31-margin-based-generalization-bounds">3.1 Margin-Based Generalization Bounds</h2>
+
+<h3 id="1-simplification">(1) Simplification:</h3>
+
+<p>Pairwise labels are in ${-1, +1}$.</p>
+
+<h3 id="2-empirical-margin-loss">(2) Empirical Margin Loss</h3>
+
+\[\hat{R}_{S, \rho}(h) = \frac{1}{m} \sum_{i=1}^{m} \Phi_{\rho}(y_i (h(x_i') - h(x_i)))\]
+
+<h3 id="3-margin-loss-and-pairwise-misranking">(3) Margin Loss and Pairwise Misranking</h3>
+
+\[\hat{R}_{S, \rho}(h) \leq \frac{1}{m} \sum_{i=1}^{m} \mathbf{1}_{y_i (h(x_i') - h(x_i)) \leq \rho}\]
+
+<h2 id="32-theorem-101">3.2 Theorem 10.1</h2>
+
+<h3 id="1-distribution-d">(1) Distribution $D$</h3>
+
+<ul>
+  <li>$D_1$: Marginal distribution of the first element of the pairs in $X \times X$.</li>
+  <li>$D_2$: Marginal distribution of the second element of the pairs.</li>
+  <li>Rademacher Complexity:</li>
+</ul>
+
+<p>\(\mathfrak{R}_{m}^{\mathcal{D}_1}(\mathcal{H}) = \mathfrak{R}_{m}^{\mathcal{D}_2}(\mathcal{H})\)
+If the $D$ is symmetric.</p>
+
+<h3 id="2-margin-bound-for-ranking">(2) Margin Bound for Ranking</h3>
+
+<p><strong>Theorem 10.1 (Margin bound for ranking)</strong> Let $\mathcal{H}$ be a set of real-valued functions. Fix $\rho &gt; 0$; then, for any $\delta &gt; 0$, with probability at least $1 - \delta$ over the choice of a sample $S$ of size $m$, each of the following holds for all $h \in \mathcal{H}$:</p>
+
+\[R(h) \leq \hat{R}_{S, \rho}(h) + \frac{2}{\rho} \left( \mathfrak{R}_{m}^{\mathcal{D}_1}(\mathcal{H}) + \mathfrak{R}_{m}^{\mathcal{D}_2}(\mathcal{H}) \right) + \sqrt{\frac{\log \frac{1}{\delta}}{2m}} \quad (10.5)\]
+
+\[R(h) \leq \hat{R}_{S, \rho}(h) + \frac{2}{\rho} \left( \hat{\mathfrak{R}}_{S_1}(\mathcal{H}) + \hat{\mathfrak{R}}_{S_2}(\mathcal{H}) \right) + 3\sqrt{\frac{\log \frac{2}{\delta}}{2m}} \quad (10.6)\]
+
+<h3 id="3-proof">(3) Proof:</h3>
+<ul>
+  <li>The proof is based on a comparison with the results of theorem 5.8.</li>
+  <li>The Rademacher complexity bounds are used to derive the margin-based generalization bounds.</li>
+</ul>
+
+<h3 id="4-extension">(4) Extension:</h3>
+
+<ul>
+  <li>
+    <p>Motivation: How these bounds can be generalized uniformly for all values of the margin parameter $\rho &gt; 0$.</p>
+  </li>
+  <li>
+    <p>Additional Term: $\sqrt{\frac{\log \log_{2}(2/\rho)}{m}}$,
+accounting for the complexity introduced by varying $\rho$, ensuring that the bound holds uniformly.</p>
+  </li>
+  <li>
+    <p>Trade-off: Increasing $\rho$ can make the middle term smaller; it makes the first term larger.</p>
+  </li>
+  <li>
+    <p>Kernel-Based Hypotheses: Using known upper bounds for Rademacher complexity to derive explicit margin bounds for ranking.</p>
+  </li>
+</ul>
+
+<h2 id="33-corollary-102">3.3 Corollary 10.2</h2>
+
+<h3 id="1-margin-bounds-with-kernel-based-hypotheses">(1) Margin Bounds with Kernel-Based Hypotheses</h3>
+
+<p><strong>Corollary 10.2 (Margin bounds for ranking with kernel-based hypotheses)</strong> Let $K: \mathcal{X} \times \mathcal{X} \to \mathbb{R}$ be a PDS kernel with $r = \sup_{x \in \mathcal{X}} K(x, x)$. Let $\Phi: \mathcal{X} \to \mathcal{H}$ be a feature mapping associated to $K$ and let $\mathcal{H} = { x \mapsto \mathbf{w} \cdot \Phi(x) : |\mathbf{w}|_{\mathcal{H}} \leq \Lambda }$ for some $\Lambda \geq 0$. Fix $\rho &gt; 0$. Then, for any $\delta &gt; 0$, the following pairwise margin bound holds with probability at least $1 - \delta$ for any $h \in \mathcal{H}$:</p>
+
+\[R(h) \leq \hat{R}_{S, \rho}(h) + 4 \sqrt{\frac{r^2 \Lambda^2 / \rho^2}{m}} + \sqrt{\frac{\log \frac{1}{\delta}}{2m}}. \quad (10.7)\]
+
+<h3 id="2-implication">(2) Implication:</h3>
+<ul>
+  <li>It depends only on the pairwise ranking margin and not directly on the dimension of the feature space.</li>
+  <li>It suggests that a small generalization error can be achieved when $\rho / r$ is large even if the empirical margin loss is small.</li>
+</ul>
+
+<h1 id="4-ranking-with-svms">4. Ranking with SVMs</h1>
+
+<h2 id="41-theoretical-guarantee">4.1 Theoretical Guarantee</h2>
+<p>Proceeding as in section 5.4 for classification, the guarantee of corollary 10.2 can be expressed as follows: for any $\delta &gt; 0$, with probability at least $1 - \delta$, for all $h \in \mathcal{H} = {x \mapsto \mathbf{w} \cdot \Phi(x) : |\mathbf{w}| \leq \Lambda }$,</p>
+
+\[R(h) \leq \frac{1}{m} \sum_{i=1}^{m} \xi_i + 4 \sqrt{\frac{r^2 \Lambda^2}{m}} + \sqrt{\frac{\log \frac{1}{\delta}}{2m}}, \quad (10.8)\]
+
+<p>where $\xi_i = \max \left( 1 - y_i \left[ \mathbf{w} \cdot \left( \Phi(x_i’) - \Phi(x_i) \right) \right], 0 \right)$ for all $i \in [m]$, and where $\Phi: \mathcal{X} \to \mathcal{H}$ is a feature mapping associated to a PDS kernel $K$.</p>
+
+<h2 id="42-objective-function-and-constraints">4.2 Objective Function and Constraints</h2>
+
+<h3 id="1-aim">(1) Aim:</h3>
+<p>To minimize the right-hand side of the above inequality which consists of:</p>
+<ul>
+  <li>Minimizing the sum of slack variables $\xi_i$.</li>
+  <li>Minimizing $|w|^2$.</li>
+</ul>
+
+<h3 id="2-objective-function">(2) Objective Function:</h3>
+
+\[\min_{\mathbf{w}, \xi} \frac{1}{2} \|\mathbf{w}\|^2 + C \sum_{i=1}^{m} \xi_i\]
+
+<h3 id="3-subject-to-the-constraints">(3) Subject to the Constraints:</h3>
+
+<p>subject to:
+$y_i \left[ \mathbf{w} \cdot \left( \Phi(x_i’) - \Phi(x_i) \right) \right] \geq 1 - \xi_i$
+$\xi_i \geq 0, \quad \forall i \in [m]$.</p>
+
+<h3 id="4-interpretation">(4) Interpretation:</h3>
+<p>This problem is equivalent to the primal optimization problem of SVMs with a feature mapping $\Psi$: $\Psi(x, x’) = \Phi(x’) - \Phi(x)$</p>
+
+<h3 id="5-kernel-trick">(5) Kernel Trick:</h3>
+
+\[K'_{ij} = \Psi(x_i, x_i') \cdot \Psi(x_j, x_j') = K(x_i, x_j) + K(x_i', x_j') - K(x_i', x_j) - K(x_i, x_j')
+\quad (10.10)\]
+
+<p>for all $i, j \in [m]$.</p>
+
+<p>By using a PDS kernel $K$, the equivalent dual problem can be expressed.</p>
+
+<h3 id="6-application">(6) Application:</h3>
+<ul>
+  <li>This algorithm can be applied to the ranking problem in the score-based setting.</li>
+  <li>It can also be extended to cases where the labels are in ${-1, 0, +1}$.</li>
+</ul>
+
+<h1 id="5-rankboost">5. RankBoost</h1>
+
+<h2 id="51-introduction">5.1 Introduction:</h2>
+<p>Boosting algorithm for pairwise ranking like AdaBoost algorithm.</p>
+
+<h2 id="52-components">5.2 Components:</h2>
+
+<h3 id="1-base-rankers">(1) Base Rankers:</h3>
+<p>Hypotheses returned by a weak learning algorithm for ranking.</p>
+
+<h3 id="2-weak-learning-algorithm">(2) Weak Learning Algorithm:</h3>
+<p>An algorithm that generates base hypotheses with minimal accuracy.</p>
+
+<h2 id="53-weighted-error-rate-epsilon_ts">5.3 Weighted error rate $\epsilon_{t}^{s}$</h2>
+<h3 id="1-meaning">(1) Meaning:</h3>
+<p>The weighted error rate of the base ranker at iteration $t$ for pairs that fall into a specific category $s$.</p>
+
+<h3 id="2-definition">(2) Definition:</h3>
+
+\[\epsilon_{t}^{s} = \sum_{i=1}^{m} D_{t}(i) \mathbf{1}_{y_{i}(h_{t}(x_{i}') - h_{t}(x_{i})) = s} = \mathbb{E}_{i \sim D_{t}} \left[ \mathbf{1}_{y_{i}(h_{t}(x_{i}') - h_{t}(x_{i})) = s} \right]\]
+
+<p>where $D_t(i)$ is the distribution weight of the $i$-th pair at iteration $t$.</p>
+
+<h2 id="53-algorithm">5.3 Algorithm:</h2>
+
+<h3 id="1-pseudocode">(1) Pseudocode</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>RankBoost($S = \{(x_1, x_1', y_1), \ldots, (x_m, x_m', y_m)\}$)
+
+for i &lt;- 1 to m do
+    D_1(i) &lt;- 1/m
+
+for t &lt;- 1 to T do
+    h_t &lt;- base ranker in H with smallest ε_t^- - ε_t^+
+    α_t &lt;- 1/2 log (ε_t^+/ε_t^-)
+    Z_t &lt;- ε_t^0 + 2(ε_t^+ ε_t^-)^1/2  // normalization factor
+    
+    for i &lt;- 1 to m do
+        D_{t+1}(i) &lt;- D_t(i) exp[-α_t y_i (h_t(x_i') - h_t(x_i))] / Z_t
+    
+f &lt;- Σ_{t=1}^T α_t h_t
+
+return f
+</code></pre></div></div>
+
+<h2 id="54-key-components">5.4 Key Components:</h2>
+
+<h3 id="1-base-ranker-selection">(1) Base Ranker Selection:</h3>
+<p>At each iteration, select $h_t$ that minimizes $\epsilon_t^{-} - \epsilon_t^{+}$, focusing on the pair with the smallest pairwise misranking error: $h_t \in \arg\min_{h \in \mathcal{H}} \left{ - \mathbb{E}_{i \sim D_t} \left[ y_i \left( h(x_i’) - h(x_i) \right) \right] \right}$</p>
+
+<h3 id="2-coefficient-alpha_t">(2) Coefficient $\alpha_t$:</h3>
+<p>A function of the ratio of misranking accuracies.</p>
+
+<h3 id="3-distribution-update">(3) Distribution Update:</h3>
+<p>The distribution $D_t$ is updated to emphasize misranked pairs more in subsequent iterations.</p>
+
+<h2 id="55-explanation">5.5 Explanation:</h2>
+
+<h3 id="1-updates">(1) Updates:</h3>
+
+<p>If $\epsilon_t^- - \epsilon_t^+ &gt; 0$, then $\frac{\epsilon_t^+}{\epsilon_t^-} &lt; 1$ and $\alpha_t &gt; 0$, meaning the new distribution $D_{t+1}$ will increase the weight on misranked pairs and decrease the weight on correctly ranked pairs.</p>
+
+<h3 id="2-final-hypothesis">(2) Final Hypothesis:</h3>
+
+<p>After $T$ rounds of boosting, the final hypothesis $f$ is a linear combination of the base rankers:</p>
+
+\[f = \sum_{t=1}^{T} \alpha_t h_t.\]
+
+<h3 id="3-distribution-update-identity">(3) Distribution Update Identity:</h3>
+
+<p>The distribution $D_{t+1}(i)$ can be expressed in terms of the final predictor $f_t$ and the normalization factors $Z_s$:</p>
+
+\[D_{t+1}(i) = \frac{e^{-y_i (f_t(x_i') - f_t(x_i))}}{m \prod_{s=1}^{t} Z_s}.\]
+
+<h2 id="56-bound-on-the-empirical-error">5.6 Bound on the Empirical Error:</h2>
+
+<h3 id="1-theorem-103-empirical-error-bound-for-rankboost">(1) Theorem 10.3: Empirical Error Bound for RankBoost</h3>
+
+<p><strong>Theorem 10.3</strong> The empirical error of the hypothesis $h: \mathcal{X} \to {0,1}$ returned by RankBoost verifies:</p>
+
+\[\hat{R}_S(h) \leq \exp \left[ -2 \sum_{t=1}^{T} \left( \frac{\epsilon_t^+ - \epsilon_t^-}{2} \right)^2 \right]. \quad (10.13)\]
+
+<p>Furthermore, if there exists $\gamma$ such that for all $t \in [T]$, $0 &lt; \gamma \leq \frac{\epsilon_t^+ - \epsilon_t^-}{2}$, then</p>
+
+\[\hat{R}_S(h) \leq \exp(-2 \gamma^2 T). \quad (10.14)\]
+
+<h3 id="2-proof">(2) Proof:</h3>
+
+<ul>
+  <li>General Inequality:</li>
+</ul>
+
+\[\mathbf{1}_{u \leq 0} \leq \exp(-u) \text{ for all } u \in \mathbb{R} \text{ and identity 10.12}:\]
+
+\[\hat{R}_S(h) = \frac{1}{m} \sum_{i=1}^{m} \mathbf{1}_{y_i (f_T(x_i') - f_T(x_i)) \leq 0} \leq \frac{1}{m} \sum_{i=1}^{m} \exp \left( -y_i (f_T(x_i') - f_T(x_i)) \right).\]
+
+<ul>
+  <li>Expression of $Z_t$:</li>
+</ul>
+
+\[\hat{R}_S(h) \leq \frac{1}{m} \sum_{i=1}^{m} \prod_{t=1}^{T} Z_t = \prod_{t=1}^{T} Z_t.\]
+
+<ul>
+  <li>Definition and Upper Bound of $Z_t$:</li>
+</ul>
+
+\[Z_t = \epsilon_t^+ e^{-\alpha_t} + \epsilon_t^- e^{\alpha_t} + \epsilon_t^0\]
+
+<p>By using the simplification and convexity of the square root function:</p>
+
+\[Z_t \leq \exp \left( - \left( \frac{\epsilon_t^+ - \epsilon_t^-}{2} \right)^2 \right).\]
+
+<ul>
+  <li>Assumption:</li>
+</ul>
+
+<p>If there exists $\gamma$ such that $0 &lt; \gamma \leq \frac{\epsilon_t^+ - \epsilon_t^-}{2}$, then:</p>
+
+\[\prod_{t=1}^{T} Z_t \leq \exp(-2 \gamma^2 T).\]
+
+<h3 id="3-implications">(3) Implications:</h3>
+
+<ul>
+  <li>
+    <p>Empirical Error:
+The empirical error decreases exponentially with the boosting rounds $T$.</p>
+  </li>
+  <li>
+    <p>Edge Condition:
+The bound assumes that the difference of each base ranker is lower bounded by a positive value $\gamma &gt; 0$.</p>
+  </li>
+  <li>
+    <p>Weak Ranking Assumption:</p>
+  </li>
+</ul>
+
+<p>The assumption $\gamma \leq \frac{\epsilon_t^+ - \epsilon_t^-}{2}$ can be relaxed to $\gamma \leq \frac{\epsilon_t^+ - \epsilon_t^-}{\sqrt{\epsilon_t^+ + \epsilon_t^-}}$,</p>
+
+<p>which considers the normalized relative difference.</p>
+
+<ul>
+  <li>
+    <p>Coefficient $\alpha_t$:
+It is chosen to minimize $Z_t$.</p>
+  </li>
+  <li>
+    <p>Base Ranker Selection:
+Base ranker can be selected based on other criteria like minimal error on the distribution $D_t$.</p>
+  </li>
+  <li>
+    <p>Range of Base Rankers:
+The base rankers could have a broader range.</p>
+  </li>
+</ul>
+
+<h2 id="57-relationship-with-coordinate-descent">5.7 Relationship with Coordinate Descent:</h2>
+
+<h3 id="1-objective-function-f">(1) Objective Function $F$:</h3>
+
+<p>\(F(\alpha) = \sum_{i=1}^{m} e^{-y_i [f_N(x_i') - f_N(x_i)]} = \sum_{i=1}^{m} e^{-y_i \sum_{j=1}^{N} \alpha_j [h_j(x_i') - h_j(x_i)]},\)
+A convex upper bound on the zero-one pairwise loss function.</p>
+
+<h3 id="2-parameter-update-by-coordinate-descent">(2) Parameter Update by Coordinate Descent:</h3>
+
+<ul>
+  <li>
+    <p>The parameter vector after iteration $t$ is given by $\alpha_t = \alpha_{t-1} + \eta e_k$, where $e_k$ is the unit vector corresponding to the $k$-th coordinate in $\mathbb{R}^N$.</p>
+  </li>
+  <li>
+    <p>The function $f_t$ is the linear combination of base hypotheses $h_j$ up to iteration $t$:</p>
+  </li>
+</ul>
+
+\[f_t = \sum_{j=1}^{t} \alpha_j h_j.\]
+
+<h3 id="3-distribution-update-1">(3) Distribution Update:</h3>
+
+<p>The distribution $D_{t+1}$ over the indices ${1, \ldots, m}$ is updated as:</p>
+
+\[D_{t+1}(i) = \frac{e^{-y_i (f_t(x_i') - f_t(x_i))}}{m \prod_{s=1}^{t} Z_s},\]
+
+<p>where $Z_s$ is the normalization factor ensuring that $D_{t+1}$ sums to 1.</p>
+
+<h3 id="4-directional-derivative-and-coordinate-descent">(4) Directional Derivative and Coordinate Descent:</h3>
+
+<p>At each iteration $t \geq 1$, the direction $e_k$ selected by coordinate descent minimizes the directional derivative $F’(\alpha_{t-1}, e_k)$:</p>
+
+\[F'(\alpha_{t-1}, e_k) = \lim_{\eta \to 0} \frac{F(\alpha_{t-1} + \eta e_k) - F(\alpha_{t-1})}{\eta}.\]
+
+<p>The directional derivative is expressed as:</p>
+
+\[F'(\alpha_{t-1}, e_k) = - \left[ \epsilon_t^- - \epsilon_t^+ \right] \prod_{s=1}^{t-1} Z_s.\]
+
+<h3 id="5-step-size-eta">(5) Step Size $\eta$:</h3>
+
+<p>The step size $\eta$ is chosen to minimize $F(\alpha_{t-1} + \eta e_k)$. Setting the derivative with respect to $\eta$ to zero:</p>
+
+\[\frac{d}{d\eta} F(\alpha_{t-1} + \eta e_k) = 0.\]
+
+<p>This results in:</p>
+
+\[\eta = \frac{1}{2} \log \frac{\epsilon_t^+}{\epsilon_t^-}.\]
+
+<h3 id="6-alternative-loss-functions">(6) Alternative Loss Functions:</h3>
+
+<p>Other convex loss functions can be used to upper bound the zero-one pairwise misranking loss, such as the logistic loss:</p>
+
+\[\alpha \mapsto \sum_{i=1}^{m} \log(1 + e^{-y_i (f_N(x_i') - f_N(x_i))}),\]
+
+<p>which can lead to alternative boosting-type algorithms.</p>
+
+<h2 id="58-margin-bound-for-ensemble-methods-in-ranking">5.8 Margin Bound for Ensemble Methods in Ranking</h2>
+
+<h3 id="1-assumptions">(1) Assumptions:</h3>
+<ul>
+  <li>The pairwise labels are assumed to be in ${-1, +1}$.</li>
+  <li>By lemma 7.4, the empirical Rademacher complexity of the convex hull $\text{conv}(H)$ equals that of $H$.</li>
+</ul>
+
+<h3 id="2-corollary-104">(2) Corollary 10.4</h3>
+
+<p><strong>Corollary 10.4</strong> Let $\mathcal{H}$ be a set of real-valued functions. Fix $\rho &gt; 0$; then, for any $\delta &gt; 0$, with probability at least $1 - \delta$ over the choice of a sample $S$ of size $m$, each of the following ranking guarantees holds for all $h \in \text{conv}(\mathcal{H})$:</p>
+
+\[R(h) \leq \hat{R}_{S, \rho}(h) + \frac{2}{\rho} \left( \mathfrak{R}_{m}^{\mathcal{D}_1}(\mathcal{H}) + \mathfrak{R}_{m}^{\mathcal{D}_2}(\mathcal{H}) \right) + \sqrt{\frac{\log \frac{1}{\delta}}{2m}}. \quad (10.17)\]
+
+\[R(h) \leq \hat{R}_{S, \rho}(h) + \frac{2}{\rho} \left( \hat{\mathfrak{R}}_{S_1}(\mathcal{H}) + \hat{\mathfrak{R}}_{S_2}(\mathcal{H}) \right) + 3 \sqrt{\frac{\log \frac{2}{\delta}}{2m}}. \quad (10.18)\]
+
+<h3 id="3-applications">(3) Applications:</h3>
+
+<p>For RankBoost, these bounds apply to $f / | \alpha |_1$, where $f$ is the hypothesis returned by the algorithm. Since $f$ and $f / | \alpha |_1$ induce the same ordering of the points, for any $\delta &gt; 0$, the following holds with probability at least $1 - \delta$:</p>
+
+\[R(f) \leq \hat{R}_{S, \rho}(f / \| \alpha \|_1) + \frac{2}{\rho} \left( \mathfrak{R}_{m}^{\mathcal{D}_1}(\mathcal{H}) + \mathfrak{R}_{m}^{\mathcal{D}_2}(\mathcal{H}) \right) + \sqrt{\frac{\log \frac{1}{\delta}}{2m}}. \quad (10.19)\]
+
+<h3 id="4-summary">(4) Summary:</h3>
+
+<ul>
+  <li>
+    <p>Number of Boosting Rounds: The bound is independent of the number of boosting iterations.</p>
+  </li>
+  <li>
+    <p>Dependencies of Bound:
+i. The margin $\rho$; ii. The sample size $m$; iii. The Rademacher complexity of the family of base classifiers $H$.</p>
+  </li>
+  <li>
+    <p>Effective Generalization:
+The bounds ensure effective generalization if the pairwise margin loss is small for a sufficiently large margin $\rho$.</p>
+  </li>
+</ul>
+
+<h1 id="6-bipartite-ranking">6. Bipartite ranking</h1>
+
+<h2 id="61-introduction">6.1 Introduction</h2>
+
+<h3 id="1-definition-1">(1) Definition</h3>
+
+<ul>
+  <li>
+    <p>Bipartite ranking problem: In this scenario, the set of points is partitioned into two classes: the class of positive points &amp; the class of negative points.</p>
+  </li>
+  <li>
+    <p>Goal: To rank positive points higher than negative points.</p>
+  </li>
+</ul>
+
+<h3 id="2-traditional-vs-bipartite-approach">(2) Traditional vs. Bipartite approach</h3>
+
+<ul>
+  <li>
+    <p>Traditional: The learner receives a sample of random pairs</p>
+  </li>
+  <li>
+    <p>Bipartite ranking: The learner receives two separate samples</p>
+  </li>
+</ul>
+
+<h3 id="3-learning-problem">(3) Learning problem</h3>
+
+<ul>
+  <li>Generalization error</li>
+</ul>
+
+\[R(h) = \mathbb{P}_{x' \sim \mathcal{D}_+, x \sim \mathcal{D}_-} [h(x') &lt; h(x)].\]
+
+<ul>
+  <li>Empirical error</li>
+</ul>
+
+\[\hat{R}_{S_+, S_-}(h) = \frac{1}{mn} \sum_{i=1}^{m} \sum_{j=1}^{n} \mathbf{1}_{h(x_j) &lt; h(x_i')}.\]
+
+<h3 id="4-challenges">(4) Challenges</h3>
+
+<ul>
+  <li>
+    <p>Complexity: Requires dealing with $mn$ pairs</p>
+  </li>
+  <li>
+    <p>Differences from binary classification: Differs in objectives and measures of success</p>
+  </li>
+</ul>
+
+<h2 id="62-boosting-in-bipartite-ranking">6.2 Boosting in bipartite ranking</h2>
+
+<h3 id="1-key-property-of-rankboost">(1) Key property of RankBoost</h3>
+
+<ul>
+  <li>
+    <p>Objective function: Bbased on the exponential function</p>
+  </li>
+  <li>
+    <p>Distribution decomposition: The product of two distributions</p>
+  </li>
+</ul>
+
+<h3 id="2-efficiency-in-bipartite-ranking">(2) Efficiency in bipartite ranking</h3>
+<p>The time and space complexity depends only on the total number of points $m+n$, not on the number of pairs $m \times n$.</p>
+
+<h3 id="3-pseudocode">(3) Pseudocode</h3>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>BipartiteRankBoost($S = \{x_1', \ldots, x_m', x_1, \ldots, x_n\}$)
+
+for j &lt;- 1 to m do
+    $D_+^1(j) \leftarrow \frac{1}{m}$
+
+for i &lt;- 1 to n do
+    $D_-^1(i) \leftarrow \frac{1}{n}$
+
+for t &lt;- 1 to T do
+    $h_t \leftarrow$ base ranker in $\mathcal{H}$ with smallest $\epsilon_t^- - \epsilon_t^+ = \mathbb{E}_{j \sim D_+^t}[h(x_j)] - \mathbb{E}_{i \sim D_-^t}[h(x_i)]$
+    $\alpha_t \leftarrow \frac{1}{2} \log \frac{\epsilon_t^+}{\epsilon_t^-}$
+    $Z_t^+ \leftarrow 1 - \epsilon_t^+ + \sqrt{\epsilon_t^+ \epsilon_t^-}$
+    
+    for i &lt;- 1 to n do
+        $D_+^{t+1}(i) \leftarrow D_+^t(i) \exp \left[ -\alpha_t h_t(x_i) \right] / Z_t^+$
+        
+    $Z_t^- \leftarrow 1 - \epsilon_t^- + \sqrt{\epsilon_t^+ \epsilon_t^-}$
+    
+    for j &lt;- 1 to m do
+        $D_-^{t+1}(j) \leftarrow D_-^t(j) \exp \left[ +\alpha_t h_t(x_j) \right] / Z_t^-$
+        
+$f \leftarrow \sum_{t=1}^{T} \alpha_t h_t$
+
+return f
+</code></pre></div></div>
+
+<h3 id="4-relationship-with-adaboost">(4) Relationship with AdaBoost</h3>
+
+<ul>
+  <li>Objective function</li>
+</ul>
+
+<p>The objective function of RankBoost can be expressed as:</p>
+
+\[F_{\text{RankBoost}}(\alpha) = \sum_{i=1}^{m} \sum_{j=1}^{n} \exp[-(f(x_i') - f(x_j))].\]
+
+<p>This can be decomposed into:</p>
+
+\[F_{\text{RankBoost}}(\alpha) = F_+(\alpha) F_-(\alpha),\]
+
+<p>where $F_+$ is the sum over positive points and $F_-$ is the sum over negative points.</p>
+
+<p>Similarly, the objective function of AdaBoost can be expressed as:</p>
+
+\[F_{\text{AdaBoost}}(\alpha) = F_+(\alpha) + F_-(\alpha).\]
+
+<ul>
+  <li>Connection</li>
+</ul>
+
+<p>The gradient of the RankBoost objective function can be expressed in terms of the gradient of the AdaBoost objective function:</p>
+
+\[\nabla_{\alpha} F_{\text{RankBoost}}(\alpha) = F_-(\alpha) \nabla_{\alpha} F_+(\alpha) + F_+(\alpha) \nabla_{\alpha} F_-(\alpha).\]
+
+<p>If $\alpha$ minimizes $F_{\text{AdaBoost}}$, then $\nabla_{\alpha} F_{\text{RankBoost}}(\alpha) = 0$, implying $\alpha$ also minimizes the convex function associated with RankBoost.</p>
+
+<ul>
+  <li>Empirical performance: It is observed empirically to be faster in convergence than AdaBoost.</li>
+</ul>
+
+<h2 id="63-area-under-the-roc-curve">6.3 Area under the ROC curve</h2>
+
+<h3 id="1-definition-2">(1) Definition</h3>
+
+<ul>
+  <li>
+    <p>AUC: Measures the performance of a ranking function by summarizing the trade-off between true positive rates and false positive rates across different thresholds.</p>
+  </li>
+  <li>
+    <p>Pairwise misranking: The proportion of incorrectly ranked pairs $\hat{R}(h, U) = \frac{1}{mn} \sum_{i=1}^{m} \sum_{j=1}^{n} \mathbf{1}_{h(z_i’) &lt; h(z_j)}.$</p>
+  </li>
+  <li>
+    <p>AUC calculation: Representing the average pairwise ranking accuracy</p>
+  </li>
+  <li>
+    <p>ROC curve: The ROC curve plots the true positive rate (TPR) against the false positive rate (FPR)</p>
+  </li>
+  <li>
+    <p>Construction of ROC curve: Points on the ROC curve are generated by varying a threshold value $\theta$. At one extreme, all points are predicted as negatives, and at the other, all as positives.</p>
+  </li>
+</ul>
+
+<h3 id="2-properties-of-auc">(2) Properties of AUC</h3>
+
+<ul>
+  <li>
+    <p>Metrics: Higher AUC values indicate better ranking performance. An AUC of 1 means perfect ranking, while an AUC of 0.5 suggests random ranking.</p>
+  </li>
+  <li>
+    <p>Computational complexity: i. Linear time calculation from a sorted array, given by $r/(mn)$; ii. The overall computational complexity is $O((m+n)\log(m+n))$ assuming a comparison-based sorting algorithm.</p>
+  </li>
+</ul>
+
+<h1 id="7-preference-based-setting">7. Preference-based setting</h1>
+
+<h2 id="71-introduction">7.1 Introduction</h2>
+
+<h3 id="1-comparison-with-score-based-setting">(1) Comparison with score-based setting</h3>
+<ul>
+  <li>In the score-based setting, the goal is to provide a linear order for all points in $X$</li>
+  <li>The preference-based setting simplifies the task by focusing only on ranking the query subset.</li>
+</ul>
+
+<h3 id="2-objective">(2) Objective</h3>
+<p>The goal is to rank a finite query subset as accurately as possible</p>
+
+<h3 id="3-advantage">(3) Advantage</h3>
+<p>Unlike the score-based setting, the learning algorithm is not required to return a linear ordering of all points, which can be challenging due to non-transitive pairwise preference labeling.</p>
+
+<h3 id="4-stages">(4) Stages</h3>
+
+<ul>
+  <li>First stage: learning the preference function</li>
+</ul>
+
+<ol>
+  <li>A sample of labeled pairs $S$ is used to learn a preference function</li>
+  <li>The preference function can be obtained using a standard classification algorithm trained on $S$</li>
+  <li>$h$ is not required to induce a linear ordering</li>
+</ol>
+
+<ul>
+  <li>Second stage: ranking query subset
+    <ol>
+      <li>Given a query subset $X’ \subseteq X$, the preference function $h$ is used to determine a ranking of $X’$.</li>
+      <li>Generate an accurate ranking for the query subset.</li>
+      <li>The complexity of the algorithm that determines the ranking is measured by the number of calls to $h$.</li>
+    </ol>
+  </li>
+</ul>
+
+<h2 id="72-second-stage-ranking-problem">7.2 Second-stage ranking problem</h2>
+
+<h3 id="1-assumption">(1) Assumption</h3>
+
+<p>Pairwise consistent: $h(u,v) + h(v,u) = 1$ for all $u,v \in X$</p>
+
+<h3 id="2-stochastic-characteristics">(2) Stochastic characteristics</h3>
+
+<ul>
+  <li>
+    <p>Unknown Distribution $D$: Pairs $(X, \sigma^<em>)$ are drawn from an unknown distribution, where $X \subseteq X$ is a query subset and $\sigma^</em>$ is a target ranking or permutation of $X$.</p>
+  </li>
+  <li>
+    <p>Objective: Use the preference function $h$ to return an accurate ranking $A(X)$ that approximates $\sigma^*$.</p>
+  </li>
+</ul>
+
+<h3 id="3-loss-function">(3) Loss function</h3>
+
+<ul>
+  <li>Loss function $L$</li>
+</ul>
+
+<p>\(L(\sigma, \sigma^*) = \frac{2}{n(n - 1)} \sum_{u \neq v} \mathbf{1}_{\sigma(u) &lt; \sigma(v)} \mathbf{1}_{\sigma^*(v) &lt; \sigma^*(u)},\)
+where the sum runs over all pairs $(u, v)$ with distinct elements of $X$.</p>
+
+<ul>
+  <li>Preference Function Loss $L(h, \sigma^*)$
+\(L(h, \sigma^) = \frac{2}{n(n - 1)} \sum_{u \neq v} h(u, v) \mathbf{1}_{\sigma^(v) &lt; \sigma^*(u)}.\)</li>
+</ul>
+
+<h3 id="4-expected-loss-and-regret">(4) Expected loss and regret</h3>
+
+<ul>
+  <li>Expected loss:</li>
+</ul>
+
+<p>For a deterministic algorithm $A$, the expected loss is</p>
+
+\[\mathbb{E}_{(X, \sigma^*) \sim \mathcal{D}} [L(A(X), \sigma^*)].\]
+
+<ul>
+  <li>Regret of algorithm $A$: 
+Defined as the difference between its loss and that of the best fixed global ranking:</li>
+</ul>
+
+\[\text{Reg}(A) = \mathbb{E}_{(X, \sigma^*) \sim \mathcal{D}} [L(A(X), \sigma^*)] - \min_{\sigma'} \mathbb{E}_{(X, \sigma^*) \sim \mathcal{D}} [L(\sigma', \sigma^*)].\]
+
+<ul>
+  <li>Regret of preference function $h$:</li>
+</ul>
+
+<p>\(\text{Reg}(h) = \mathbb{E}_{(X, \sigma^*) \sim \mathcal{D}} [L(h | X, \sigma^*)] - \min_{h'} \mathbb{E}_{(X, \sigma^*) \sim \mathcal{D}} [L(h' | X, \sigma^*)],\)
+where $h | X$ denotes the restriction of $h$ to $X \times X$.</p>
+
+<h3 id="5-pairwise-independence">(5) Pairwise independence</h3>
+<ul>
+  <li>Assumes that for any $u,v \in X$, and any two sets $X_1$ and $X_2$ containing $u$ and $v$, the random variable $\sigma^* \mid X$ conditioned on $X$ maintains independence between pairs.</li>
+  <li>Helps in defining and analyzing the regret for the ranking algorithms.</li>
+</ul>
+
+<h2 id="73-deterministic-algorithm">7.3 Deterministic algorithm</h2>
+
+<h3 id="1-sort-by-degree-algorithm">(1) Sort-by-degree algorithm</h3>
+<p>A deterministic approach that ranks elements based on how many other elements they are preferred to.</p>
+
+<h3 id="2-expected-loss-and-regret">(2) Expected loss and regret</h3>
+
+\[\mathbb{E}_{X, \sigma^*} [L(A_{\text{sort-by-degree}}(X), \sigma^*)] \leq 2 \mathbb{E}_{X, \sigma^*} [L(h, \sigma^*)].\]
+
+\[\text{Reg}(A_{\text{sort-by-degree}}(X)) \leq 2 \text{Reg}(h).\]
+
+<h3 id="3-implications-1">(3) Implications</h3>
+<ul>
+  <li>The algorithm can achieve an accurate ranking when the loss or regret of the preference function is small.</li>
+  <li>These bounds connect the ranking loss or regret of the algorithm to the classification loss or regret of $h$.</li>
+</ul>
+
+<h3 id="4-theorem-105">(4) Theorem 10.5</h3>
+<p><strong>Theorem 10.5 (Lower bound for deterministic algorithms)</strong> For any deterministic algorithm $A$, there is a bipartite distribution for which</p>
+
+\[\text{Reg}(A) \geq 2 \text{Reg}(h).\]
+
+<p>No deterministic algorithm can improve upon the factor of two in the regret guarantee</p>
+
+<h3 id="5-limitations">(5) Limitations</h3>
+
+<ul>
+  <li>
+    <p>Factor of two: 
+The performance is at most twice as bad as the best possible.</p>
+  </li>
+  <li>
+    <p>Example: 
+For a binary classifier with an error rate of 25%, the worst-case pairwise misranking error for the ranking algorithm would be at most 50%.</p>
+  </li>
+  <li>
+    <p>Randomization: 
+Randomization is suggested as deterministic algorithms have an inherent lower bound on performance.</p>
+  </li>
+</ul>
+
+<h2 id="74-randomized-algorithm">7.4 Randomized algorithm</h2>
+
+<h3 id="1-introduction-1">（1） Introduction</h3>
+
+<ul>
+  <li>
+    <p>General idea： Extends the QuickSort algorithm for the second stage of ranking</p>
+  </li>
+  <li>
+    <p>Advantage： The expected time complexity is $O(n \log n)$ when applied to an array of size $n$, and it removes the factor of two in the deterministic case bounds.</p>
+  </li>
+</ul>
+
+<h3 id="2-algorithm">(2) Algorithm</h3>
+
+<ul>
+  <li>
+    <p>Pivot selection: 
+At each recursive step, a pivot element $u$ is selected uniformly at random from $X$</p>
+  </li>
+  <li>
+    <p>Partitioning:</p>
+  </li>
+</ul>
+
+<p>For each $v \neq u$:</p>
+<ol>
+  <li>Place $v$ on the left of $u$ with probability $h(v,u)$.</li>
+  <li>Place $v$ on the right of $u$ with probability $h(u,v)$.</li>
+</ol>
+
+<ul>
+  <li>
+    <p>Recursion: The algorithm proceeds recursively with the left and right subarrays.</p>
+  </li>
+  <li>
+    <p>Concatenation: 
+The final permutation is obtained by concatenating the results of the left recursion, $u$, and the right recursion.</p>
+  </li>
+</ul>
+
+<h3 id="3-guarantees">(3) Guarantees</h3>
+
+<ul>
+  <li>Expected Loss</li>
+</ul>
+
+\[\mathbb{E}_{X, \sigma^*, s} [L(A_{\text{QuickSort}}(X, s), \sigma^*)] = \mathbb{E}_{X, \sigma^*} [L(h, \sigma^*)].\]
+
+<ul>
+  <li>Regret</li>
+</ul>
+
+\[\text{Reg}(A_{\text{QuickSort}}) \leq \text{Reg}(h).\]
+
+<ul>
+  <li>General Ranking Setting</li>
+</ul>
+
+\[\mathbb{E}_{X, \sigma^*, s} [L(A_{\text{QuickSort}}(X, s), \sigma^*)] \leq 2 \mathbb{E}_{X, \sigma^*} [L(h, \sigma^*)].\]
+
+<ul>
+  <li>Implication: The expected loss for QuickSort matches the loss of the preference function $h$ without the factor of two</li>
+</ul>
+
+<h3 id="4-time-complexity">(4) Time complexity</h3>
+<p>Expected time complexity is $O(n \log n)$</p>
+
+<h2 id="75-extension-to-other-loss-functions">7.5 Extension to other loss functions</h2>
+
+<h3 id="1-weighted-loss-functions">(1) Weighted loss functions</h3>
+<p>The extension to $L_{\omega}$ allows for defining a family of loss functions that can emphasize different aspects of ranking, based on the weight function $\omega$:</p>
+
+<p>\(L_{\omega}(\sigma, \sigma^*) = \frac{2}{n(n - 1)} \sum_{u \neq v} \omega(\sigma^*(v), \sigma^*(u)) \mathbf{1}_{\sigma(u) &lt; \sigma(v)} \mathbf{1}_{\sigma^*(v) &lt; \sigma^*(u)},\)
+where the sum runs over all pairs $(u, v)$ with distinct elements of $X$.</p>
+
+<h3 id="2-weight-function-omega">(2) Weight function $\omega$</h3>
+
+<p>It is a symmetric function, satisfying:</p>
+
+<ul>
+  <li>
+    <p>Symmetry: $\omega(i, j) = \omega(j, i)$ for all $i, j$.</p>
+  </li>
+  <li>
+    <p>Monotonicity: $\omega(i, j) \leq \omega(i, k)$ if either $i &lt; j &lt; k$ or $i &gt; j &gt; k$.</p>
+  </li>
+  <li>
+    <p>Triangle Inequality: $\omega(i, j) \leq \omega(i, k) + \omega(k, j)$.</p>
+  </li>
+</ul>
+
+<h3 id="3-correct-order-importance">(3) Correct order importance</h3>
+<p>The triangle inequality property stems from the idea that if correctly ordering elements in positions $(i,k)$ and $(k,j)$ is not of great importance, then correctly ordering $(i,j)$ should hold.</p>
+
+<h1 id="8-other-ranking-criteria">8. Other ranking criteria</h1>
+
+<h2 id="81-precision-precisionn-average-precision-recall">8.1 Precision, precision@n, average precision, recall</h2>
+
+<h3 id="1-precision">(1) Precision</h3>
+<p>Measures the accuracy of positive predictions</p>
+
+<h3 id="2-precision-n">(2) Precision @n</h3>
+<p>Focuses on the top $n$ predictions</p>
+
+<h3 id="3-average-precision">(3) Average precision</h3>
+<p>Averages precision at various cutoff points</p>
+
+<h3 id="4-recall">(4) Recall</h3>
+<p>Measures the completeness of positive predictions</p>
+
+<h2 id="82-dcg-and-ndcg">8.2 DCG and NDCG</h2>
+
+<h3 id="1-dcg">(1) DCG</h3>
+<p>Uses relevance scores and discount factors to measure the quality of ranking</p>
+
+<h3 id="2-ndcg">(2) NDCG</h3>
+<p>Normalizes DCG to allow comparison across different query sets</p>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Foundations of Machine Learning</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Foundations of Machine Learning</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Notes for Foundations of Machine Learning</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
